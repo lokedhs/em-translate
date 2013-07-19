@@ -163,6 +163,7 @@ With prefix arg, ask for the source language."
     (em-translate-mode)
     (delete-region (point-min) (point-max))
     (insert (car translated))
+    (fill-region (point-min) (point-max) nil t)
     (setq buffer-read-only t)
     (unless source
       (em-translate--display-detected (cadr translated)))))
