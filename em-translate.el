@@ -3,6 +3,7 @@
 (require 'http-post-simple)
 (require 'json)
 (require 'popup)
+(require 'cl)
 
 (defvar em-translate-mode nil)
 
