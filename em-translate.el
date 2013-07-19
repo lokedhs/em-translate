@@ -108,7 +108,7 @@
 With prefix arg, ask for the source language."
   (interactive)
   (when current-prefix-arg
-    (setq source  (em-translate--select-source-language)))
+    (setq source (em-translate--select-source-language)))
   (let ((translation (em-translate-string (save-excursion
                                             (backward-paragraph)
                                             (let ((start (point)))
@@ -161,7 +161,7 @@ With prefix arg, ask for the source language."
 With prefix arg, ask for the source language."
   (interactive)
   (when current-prefix-arg
-    (setq source  (em-translate--select-source-language)))
+    (setq source (em-translate--select-source-language)))
   (em-translate--insert-to-new (buffer-substring (point) (mark)) source))
 
 (defun em-translate-buffer (&optional source)
@@ -169,13 +169,13 @@ With prefix arg, ask for the source language."
 With prefix arg, ask for the source language."
   (interactive)
   (when current-prefix-arg
-    (setq source  (em-translate--select-source-language)))
+    (setq source (em-translate--select-source-language)))
   (em-translate--insert-to-new (buffer-string)) source)
 
 (defun em-translate-markup-region (&optional source)
   (interactive)
   (when current-prefix-arg
-    (setq source  (em-translate--select-source-language)))
+    (setq source (em-translate--select-source-language)))
   (save-restriction
     (narrow-to-region
      (goto-char (point-min))
