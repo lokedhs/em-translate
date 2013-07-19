@@ -137,7 +137,6 @@ With prefix arg, ask for the source language."
                                                       (format . "text")
                                                       ,@(if source (list (cons 'source source))))
                                                     :extra-headers '(("X-HTTP-Method-Override" . "GET")))))
-    (setq xx url-result)
     (unless (= (caddr url-result) 200)
       (error "Error performing HTTP request"))
     (let* ((decoded (json-read-from-string (car url-result)))
@@ -165,6 +164,7 @@ With prefix arg, ask for the source language."
     (insert (car translated))
     (fill-region (point-min) (point-max) nil t)
     (setq buffer-read-only t)
+    (goto-char (point-min))
     (unless source
       (em-translate--display-detected (cadr translated)))))
 
