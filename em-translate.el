@@ -47,18 +47,77 @@
                                                            charset)))
                                      extra-headers)))
 
-(defun em-translate-paragraph-popup ()
-  "Translate the paragraph at point nad display the translation in a popup"
+(defvar em-translate-languages-map '(("af" "Afrikaans")
+                                     ("sq" "Albanian")
+                                     ("ar" "Arabic")
+                                     ("az" "Azerbaijani")
+                                     ("eu" "Basque")
+                                     ("bn" "Bengali")
+                                     ("be" "Belarusian")
+                                     ("bg" "Bulgarian")
+                                     ("ca" "Catalan")
+                                     ("zh-CN" "Chinese Simplified")
+                                     ("zh-TW" "Chinese Traditional")
+                                     ("hr" "Croatian")
+                                     ("cs" "Czech")
+                                     ("da" "Danish")
+                                     ("nl" "Dutch")
+                                     ("en" "English")
+                                     ("eo" "Esperanto")
+                                     ("et" "Estonian")
+                                     ("tl" "Filipino")
+                                     ("fi" "Finnish")
+                                     ("fr" "French")
+                                     ("gl" "Galician")
+                                     ("ka" "Georgian")
+                                     ("de" "German")
+                                     ("el" "Greek")
+                                     ("gu" "Gujarati")
+                                     ("iw" "Hebrew")
+                                     ("hu" "Hungarian")
+                                     ("id" "Indonesian")
+                                     ("it" "Italian")
+                                     ("ja" "Japanese")
+                                     ("ko" "Korean")
+                                     ("lv" "Latvian")
+                                     ("lt" "Lithuanian")
+                                     ("ms" "Malay")
+                                     ("no" "Norwegian")
+                                     ("pl" "Polish")
+                                     ("pt" "Portuguese")
+                                     ("ru" "Russian")
+                                     ("sk" "Slovak")
+                                     ("sl" "Slovenian")
+                                     ("sw" "Swahili")
+                                     ("ta" "Tamil")
+                                     ("th" "Thai")
+                                     ("uk" "Ukrainian")
+                                     ("vi" "Vietnamese")
+                                     ("yi" "Yiddish")))
+
+(defun em-translate--select-source-language ()
+  (let ((completion-ignore-case t))
+    (let ((s (completing-read "Language: " (mapcar #'cadr em-translate-languages-map) nil t)))
+      (let ((found (cl-find s em-translate-languages-map :test #'equal :key #'cadr)))
+        (unless found
+          (error "Can't find language"))
+        (car found)))))
+
+(defun em-translate-paragraph-popup (&optional source)
+  "Translate the paragraph at point nad display the translation in a popup.
+With prefix arg, ask for the source language."
   (interactive)
+  (when current-prefix-arg
+    (setq source  (em-translate--select-source-language)))
   (let ((translation (em-translate-string (save-excursion
                                                    (backward-paragraph)
                                                    (let ((start (point)))
                                                      (forward-paragraph)
-                                                     (buffer-substring start (point)))))))
-    (message "Language detected as: %s" (cadr translation))
+                                                     (buffer-substring start (point))))
+                                          source)))
     (popup-tip (em-translate--trim-space (car translation)))))
 
-(defun em-translate-string (text &optional target)
+(defun em-translate-string (text &optional source target)
   "Translate the given string and return it as a string. An optional parameter
 `target' indicates the langiage code to translate to (defaults to the value of
 `em-translate-lang'."
@@ -68,7 +127,8 @@
                                          `((key    . ,em-translate-google-apikey)
                                            (target . ,(or target em-translate-lang))
                                            (q      . ,text)
-                                           (format . "text"))
+                                           (format . "text")
+                                           ,@(if source (list (cons 'source source))))
                                          :extra-headers '(("X-HTTP-Method-Override" . "GET")))))
     (unless (= (caddr url-result) 200)
       (error "Error performing HTTP request"))
@@ -84,28 +144,38 @@
              (text (cdr (assoc 'translatedText translation-entry))))
         (list text detected-language)))))
 
-(defun em-translate--insert-to-new (text)
-  (let ((translated (em-translate-string text)))
+(defun em-translate--insert-to-new (text &optional source)
+  (let ((translated (em-translate-string text source)))
     (switch-to-buffer (get-buffer-create "*Translate Result*"))
     (setq buffer-read-only nil)
     (em-translate-mode)
     (delete-region (point-min) (point-max))
     (insert (car translated))
     (setq buffer-read-only t)
-    (message "Detected source language: %s" (cadr translated))))
+    (unless source
+      (let ((v (cl-find (cadr translated) em-translate-languages-map :test #'equal :key #'car)))
+        (message "Detected source language: %s" (cadr v))))))
 
-(defun em-translate-region ()
-  "Translate the content of the current region and display the result in a new buffer."
+(defun em-translate-region (&optional source)
+  "Translate the content of the current region and display the result in a new buffer.
+With prefix arg, ask for the source language."
   (interactive)
-  (em-translate--insert-to-new (buffer-substring (point) (mark))))
+  (when current-prefix-arg
+    (setq source  (em-translate--select-source-language)))
+  (em-translate--insert-to-new (buffer-substring (point) (mark)) source))
 
-(defun em-translate-buffer ()
-  "Translate the content of the buffer and display the result in a new buffer."
+(defun em-translate-buffer (&optional source)
+  "Translate the content of the buffer and display the result in a new buffer.
+With prefix arg, ask for the source language."
   (interactive)
-  (em-translate--insert-to-new (buffer-string)))
+  (when current-prefix-arg
+    (setq source  (em-translate--select-source-language)))
+  (em-translate--insert-to-new (buffer-string)) source)
 
-(defun em-translate-markup-region ()
+(defun em-translate-markup-region (&optional source)
   (interactive)
+  (when current-prefix-arg
+    (setq source  (em-translate--select-source-language)))
   (save-restriction
     (narrow-to-region
      (goto-char (point-min))
@@ -114,7 +184,7 @@
            do (forward-paragraph)
            do (let* ((current (point))
                      (text (buffer-substring previous current))
-                     (translated-text (em-translate-string text)))
+                     (translated-text (em-translate-string text source)))
                 (when (not (string= (cadr translated-text) "en"))
                   (put-text-property previous current
                                      'display (car (em-translate-string text)))
