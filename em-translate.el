@@ -62,6 +62,8 @@
   "Translate the given string and return it as a string. An optional parameter
 `target' indicates the langiage code to translate to (defaults to the value of
 `em-translate-lang'."
+  (when (equal em-translate-google-apikey "")
+    (error "em-translate-google-apikey has not been configured"))
   (let ((url-result (em-translate--http-post-simple "https://www.googleapis.com/language/translate/v2"
                                          `((key    . ,em-translate-google-apikey)
                                            (target . ,(or target em-translate-lang))
