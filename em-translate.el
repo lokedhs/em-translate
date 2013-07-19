@@ -110,10 +110,10 @@ With prefix arg, ask for the source language."
   (when current-prefix-arg
     (setq source  (em-translate--select-source-language)))
   (let ((translation (em-translate-string (save-excursion
-                                                   (backward-paragraph)
-                                                   (let ((start (point)))
-                                                     (forward-paragraph)
-                                                     (buffer-substring start (point))))
+                                            (backward-paragraph)
+                                            (let ((start (point)))
+                                              (forward-paragraph)
+                                              (buffer-substring start (point))))
                                           source)))
     (popup-tip (em-translate--trim-space (car translation)))))
 
@@ -124,12 +124,12 @@ With prefix arg, ask for the source language."
   (when (equal em-translate-google-apikey "")
     (error "em-translate-google-apikey has not been configured"))
   (let ((url-result (em-translate--http-post-simple "https://www.googleapis.com/language/translate/v2"
-                                         `((key    . ,em-translate-google-apikey)
-                                           (target . ,(or target em-translate-lang))
-                                           (q      . ,text)
-                                           (format . "text")
-                                           ,@(if source (list (cons 'source source))))
-                                         :extra-headers '(("X-HTTP-Method-Override" . "GET")))))
+                                                    `((key    . ,em-translate-google-apikey)
+                                                      (target . ,(or target em-translate-lang))
+                                                      (q      . ,text)
+                                                      (format . "text")
+                                                      ,@(if source (list (cons 'source source))))
+                                                    :extra-headers '(("X-HTTP-Method-Override" . "GET")))))
     (unless (= (caddr url-result) 200)
       (error "Error performing HTTP request"))
     (let* ((decoded (json-read-from-string (car url-result)))
