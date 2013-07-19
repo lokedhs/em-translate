@@ -167,13 +167,13 @@ With prefix arg, ask for the source language."
     (unless source
       (em-translate--display-detected (cadr translated)))))
 
-(defun em-translate-region (&optional source)
+(defun em-translate-region (start end &optional source)
   "Translate the content of the current region and display the result in a new buffer.
 With prefix arg, ask for the source language."
-  (interactive)
+  (interactive "r")
   (when current-prefix-arg
     (setq source (em-translate--select-source-language)))
-  (em-translate--insert-to-new (buffer-substring (point) (mark)) source))
+  (em-translate--insert-to-new (buffer-substring start end) source))
 
 (defun em-translate-buffer (&optional source)
   "Translate the content of the buffer and display the result in a new buffer.
