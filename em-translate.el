@@ -104,7 +104,7 @@
         (car found)))))
 
 (defun em-translate-paragraph-popup (&optional source)
-  "Translate the paragraph at point nad display the translation in a popup.
+  "Translate the paragraph at point and display the translation in a popup.
 With prefix arg, ask for the source language."
   (interactive)
   (when current-prefix-arg
