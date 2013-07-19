@@ -41,6 +41,11 @@
 
 (defun* em-translate--http-post-simple (url fields &key charset extra-headers)
   "Like `http-post-simple' but use &key parameters and adds `extra-headers' parameter"
+  (setq yy (list url (http-post-encode-fields fields charset) charset
+                 (append `(("Content-Type" . ,(http-post-content-type
+                                               "application/x-www-form-urlencoded"
+                                               charset)))
+                         extra-headers)))
   (http-post-simple-internal url (http-post-encode-fields fields charset) charset
                              (append `(("Content-Type" . ,(http-post-content-type
                                                            "application/x-www-form-urlencoded"
@@ -130,6 +135,7 @@ With prefix arg, ask for the source language."
                                                       (format . "text")
                                                       ,@(if source (list (cons 'source source))))
                                                     :extra-headers '(("X-HTTP-Method-Override" . "GET")))))
+    (setq xx url-result)
     (unless (= (caddr url-result) 200)
       (error "Error performing HTTP request"))
     (let* ((decoded (json-read-from-string (car url-result)))
@@ -141,7 +147,7 @@ With prefix arg, ask for the source language."
         (error "Expected a single translation, got %d results" (length translations-list)))
       (let* ((translation-entry (aref translations-list 0))
              (detected-language (cdr (assoc 'detectedSourceLanguage translation-entry)))
-             (text (cdr (assoc 'translatedText translation-entry))))
+             (text (decode-coding-string (cdr (assoc 'translatedText translation-entry)) 'utf-8)))
         (list text detected-language)))))
 
 (defun em-translate--insert-to-new (text &optional source)
