@@ -125,6 +125,7 @@
           (error "Can't find language"))
         (car found)))))
 
+;;;###autoload
 (defun em-translate-paragraph-popup (&optional source)
   "Translate the paragraph at point and display the translation in a popup.
 With prefix arg, ask for the source language."
@@ -185,6 +186,7 @@ With prefix arg, ask for the source language."
     (unless source
       (em-translate--display-detected (cadr translated)))))
 
+;;;###autoload
 (defun em-translate-region (start end &optional source)
   "Translate the content of the current region and display the result in a new buffer.
 With prefix arg, ask for the source language."
@@ -193,6 +195,7 @@ With prefix arg, ask for the source language."
     (setq source (em-translate--select-source-language)))
   (em-translate--insert-to-new (buffer-substring start end) source))
 
+;;;###autoload
 (defun em-translate-buffer (&optional source)
   "Translate the content of the buffer and display the result in a new buffer.
 With prefix arg, ask for the source language."
@@ -201,6 +204,7 @@ With prefix arg, ask for the source language."
     (setq source (em-translate--select-source-language)))
   (em-translate--insert-to-new (buffer-string)) source)
 
+;;;###autoload
 (defun em-translate-markup-region (&optional source)
   (interactive)
   (when current-prefix-arg
@@ -220,6 +224,7 @@ With prefix arg, ask for the source language."
                   (put-text-property previous current
                                      'face 'em-translate-text-face)))))))
 
+;;;###autoload
 (defun em-translate-kill-buffer ()
   (interactive)
   (let ((buffer (get-buffer "*Translate Result*")))
