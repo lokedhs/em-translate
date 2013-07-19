@@ -205,26 +205,6 @@ With prefix arg, ask for the source language."
   (em-translate--insert-to-new (buffer-string)) source)
 
 ;;;###autoload
-(defun em-translate-markup-region (&optional source)
-  (interactive)
-  (when current-prefix-arg
-    (setq source (em-translate--select-source-language)))
-  (save-restriction
-    (narrow-to-region
-     (goto-char (point-min))
-     (loop while (< (point) (point-max))
-           for previous = (point)
-           do (forward-paragraph)
-           do (let* ((current (point))
-                     (text (buffer-substring previous current))
-                     (translated-text (em-translate-string text source)))
-                (when (not (string= (cadr translated-text) "en"))
-                  (put-text-property previous current
-                                     'display (car (em-translate-string text)))
-                  (put-text-property previous current
-                                     'face 'em-translate-text-face)))))))
-
-;;;###autoload
 (defun em-translate-kill-buffer ()
   (interactive)
   (let ((buffer (get-buffer "*Translate Result*")))
