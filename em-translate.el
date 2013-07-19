@@ -120,6 +120,8 @@ With prefix arg, ask for the source language."
                                               (forward-paragraph)
                                               (buffer-substring start (point))))
                                           source)))
+    (unless source
+      (em-translate--display-detected (cadr translation)))
     (popup-tip (em-translate--trim-space (car translation)))))
 
 (defun em-translate-string (text &optional source target)
@@ -150,6 +152,10 @@ With prefix arg, ask for the source language."
              (text (decode-coding-string (cdr (assoc 'translatedText translation-entry)) 'utf-8)))
         (list text detected-language)))))
 
+(defun em-translate--display-detected (lang)
+  (let ((v (cl-find lang em-translate-languages-map :test #'equal :key #'car)))
+    (message "Detected source language: %s" (cadr v))))
+
 (defun em-translate--insert-to-new (text &optional source)
   (let ((translated (em-translate-string text source)))
     (switch-to-buffer (get-buffer-create "*Translate Result*"))
@@ -159,8 +165,7 @@ With prefix arg, ask for the source language."
     (insert (car translated))
     (setq buffer-read-only t)
     (unless source
-      (let ((v (cl-find (cadr translated) em-translate-languages-map :test #'equal :key #'car)))
-        (message "Detected source language: %s" (cadr v))))))
+      (em-translate--display-detected (cadr translated)))))
 
 (defun em-translate-region (&optional source)
   "Translate the content of the current region and display the result in a new buffer.
