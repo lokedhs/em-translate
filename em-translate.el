@@ -202,7 +202,7 @@ With prefix arg, ask for the source language."
   (interactive)
   (when current-prefix-arg
     (setq source (em-translate--select-source-language)))
-  (em-translate--insert-to-new (buffer-string)) source)
+  (em-translate--insert-to-new (buffer-string) source))
 
 ;;;###autoload
 (defun em-translate-kill-buffer ()
