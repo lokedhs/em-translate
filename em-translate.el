@@ -4,6 +4,7 @@
 (require 'json)
 (require 'popup)
 (require 'cl)
+(require 'thingatpt)
 
 (defvar em-translate-mode nil)
 
