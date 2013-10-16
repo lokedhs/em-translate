@@ -42,11 +42,6 @@
 
 (defun* em-translate--http-post-simple (url fields &key charset extra-headers)
   "Like `http-post-simple' but use &key parameters and adds `extra-headers' parameter"
-  (list url (http-post-encode-fields fields charset) charset
-        (append `(("Content-Type" . ,(http-post-content-type
-                                      "application/x-www-form-urlencoded"
-                                      charset)))
-                extra-headers))
   (http-post-simple-internal url (http-post-encode-fields fields charset) charset
                              (append `(("Content-Type" . ,(http-post-content-type
                                                            "application/x-www-form-urlencoded"
