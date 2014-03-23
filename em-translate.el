@@ -4,6 +4,7 @@
 (require 'json)
 (require 'popup)
 (require 'cl)
+(require 'thingatpt)
 
 (defvar em-translate-mode nil)
 
@@ -128,7 +129,7 @@ With prefix arg, ask for the source language."
   (when current-prefix-arg
     (setq source (em-translate--select-source-language)))
   (let ((translation (em-translate-string (save-excursion
-                                            (backward-paragraph)
+                                            (beginning-of-thing 'paragraph)
                                             (let ((start (point)))
                                               (forward-paragraph)
                                               (buffer-substring start (point))))
@@ -139,8 +140,8 @@ With prefix arg, ask for the source language."
 
 (defun em-translate-string (text &optional source target)
   "Translate the given string and return it as a string. An optional parameter
-`target' indicates the langiage code to translate to (defaults to the value of
-`em-translate-lang'."
+`target' indicates the language code to translate to (defaults to the value of
+`em-translate-lang')."
   (when (equal em-translate-google-apikey "")
     (error "em-translate-google-apikey has not been configured"))
   (let ((url-result (em-translate--http-post-simple "https://www.googleapis.com/language/translate/v2"
