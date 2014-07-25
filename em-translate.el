@@ -20,6 +20,12 @@
   :type 'string
   :group 'em-translate)
 
+;;;###autoload
+(defcustom em-translate-hooks nil
+  "Hooks run before a transation is performed"
+  :type 'hook
+  :group 'em-translate)
+
 (defface em-translate-text-face
   '((default :foreground "red")) "Face used to display translated text")
 
@@ -142,6 +148,7 @@ With prefix arg, ask for the source language."
   "Translate the given string and return it as a string. An optional parameter
 `target' indicates the language code to translate to (defaults to the value of
 `em-translate-lang')."
+  (run-hooks 'em-translate-hooks)
   (when (equal em-translate-google-apikey "")
     (error "em-translate-google-apikey has not been configured"))
   (let ((url-result (em-translate--http-post-simple "https://www.googleapis.com/language/translate/v2"
