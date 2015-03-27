@@ -9,18 +9,21 @@
 (defvar em-translate-mode nil)
 
 ;;;###autoload
+(defgroup em-translate nil
+  "Access to Google Translate"
+  :prefix 'em-translate
+  :group 'text)
+
 (defcustom em-translate-google-apikey ""
   "The Google API key for the translation service"
   :type 'string
   :group 'em-translate)
 
-;;;###autoload
 (defcustom em-translate-lang "en"
   "The language that the service should translate text to"
   :type 'string
   :group 'em-translate)
 
-;;;###autoload
 (defcustom em-translate-hooks nil
   "Hooks run before a transation is performed"
   :type 'hook
